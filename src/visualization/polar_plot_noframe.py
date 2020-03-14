@@ -41,7 +41,7 @@ def plot_polar_contour(values, azimuths, zeniths, cmap, levels):
     values = values.reshape(len(zeniths), len(azimuths))
  
     r, theta = zeniths, np.radians(azimuths)
-    fig, ax = subplots(subplot_kw=dict(projection='polar',frameon=False),figsize=(9,9))
+    fig, ax = subplots(subplot_kw=dict(projection='polar',frameon=False),figsize=(15,15))
     ax.set_theta_zero_location("N")
     ax.set_theta_direction(-1)
     ax.set_axis_off()

@@ -1,41 +1,21 @@
 # -*- coding: utf-8 -*-
 import sys,getopt
 from scipy.io import netcdf
-import matplotlib
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from src.data.context_management import cd
-from src.visualization.polar_plot_noframe import plot_polar_contour
-import matplotlib.pyplot as plt
 import cdsapi
 
 c = cdsapi.Client()
 
-years = [str(x) for x in range(1989,2019)]
-
-c.retrieve(
-    'satellite-ozone',
-    {
-        'processing_level': 'level_4',
-        'variable': 'ozone_mole_content',
-        'vertical_aggregation': 'total_column',
-        'sensor': 'combination_of_15_sensors_using_gap_filling_assimilation_methods',
-        'year': years,
-        'month': '01',
-        'version': '0021',
-        'format': 'zip',
-    },
-    'download.zip')
+years = [str(x) for x in range(1989,2001)] + [str(x) for x in range(2002,2019)]
 
 #months = ['01','02','03','04','05','06','07','08','09','10','11','12']
-
-fig, ax = plt.subplots(3, 4)
 
 for year in years:
     # Open file in a netCDF reader
     directory = 'data\\raw\\Copernicus\\'
-    wrf_file_name = 'C3S_OZONE-L4-TC-ASSIM_MSR-1989'+'01'+'-fv0021.nc'
+    wrf_file_name = 'C3S_OZONE-L4-TC-ASSIM_MSR-'+year+'01'+'-fv0021.nc'
     with cd(directory):
         nc = netcdf.netcdf_file(wrf_file_name, 'r')
         data = nc.variables['total_ozone_column'][0][:].copy()  # copy to variable as .netcdf_file gives direct view to memory
@@ -64,5 +44,7 @@ for year in years:
     o3_data = pd.concat((o3_datav2, o3_datav2.iloc[:, 0]), axis=1)
     assert o3_data.shape == (45,361), "shape is: %r" % str(o3_data.shape)
 
-    plot_polar_contour(o3_data,np.arange(-180,181),np.arange(0,45),cmap='spring',levels=200)
-    plt.show()
+    export_dir = 'data\\processed\\'
+
+    with cd(export_dir):
+        o3_data.to_csv(year+'01.csv')

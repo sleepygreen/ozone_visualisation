@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sun Feb  9 16:20:11 2020
 
-@author: Harry
-"""
 
 import h5py
 import numpy as np
@@ -11,7 +7,6 @@ import numpy.ma as ma
 import pandas as pd
 import os
 from matplotlib.pyplot import *
-from matplotlib import cm
 from polar_plot_noframe import plot_polar_contour
 from contextlib import contextmanager
 
