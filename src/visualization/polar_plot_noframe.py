@@ -6,7 +6,7 @@ Created on Sun Feb  9 16:29:24 2020
 """
 
 import numpy as np
-from matplotlib.pyplot import *
+import matplotlib.pyplot as plt
 from matplotlib import cm
 
 def plot_polar_contour(values, azimuths, zeniths, cmap, levels):
@@ -41,13 +41,14 @@ def plot_polar_contour(values, azimuths, zeniths, cmap, levels):
     values = values.reshape(len(zeniths), len(azimuths))
  
     r, theta = zeniths, np.radians(azimuths)
-    fig, ax = subplots(subplot_kw=dict(projection='polar',frameon=False),figsize=(15,15))
+    fig, ax = plt.subplots(subplot_kw=dict(projection='polar',frameon=True),figsize=(15,15))
     ax.set_theta_zero_location("N")
     ax.set_theta_direction(-1)
-    ax.set_axis_off()
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
     cax = ax.contourf(theta, r, values,
                       np.arange(values.min(),values.max(),(values.max()-values.min())/levels),
-                      cmap=matplotlib.pyplot.get_cmap(cmap),
+                      cmap=plt.get_cmap(cmap),
                       extend='both')
     #autumn()
 #    cb = fig.colorbar(cax)
