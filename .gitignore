@@ -87,6 +87,7 @@ target/
 
 # plots
 .png
+/reports/figures
 
 # Mypy cache
 .mypy_cache/
