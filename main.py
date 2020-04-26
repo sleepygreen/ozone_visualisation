@@ -1,44 +1,38 @@
-# -*- coding: utf-8 -*-
-import sys, getopt
-from scipy.io import netcdf
 import numpy as np
 import pandas as pd
-from src.data.context_management import cd
+import matplotlib.pyplot as plt
+from matplotlib import animation
+import src.data.download as dl
+import src.data.ingest as ing
+import src.data.process as ps
+import src.visualization.visualization as vis
+import config
 
-months = ['01','02','03','04','05','06','07','08','09','10','11','12']
+# Download functions
+if config.DL_NASA:
+    filenames, urls = dl.gen_filenames(config.he5_root, config.he5_ext)
+    dl.dl_nasa_he5_ozone(path=config.NASA_PATH, urls=urls[0:3], filenames=filenames[0:3],
+                         max_retries=config.MAX_RETRIES)
 
-for month in months:
-    # Open file in a netCDF reader
-    directory = 'data\\Copernicus\\raw\\'
-    wrf_file_name = 'C3S_OZONE-L4-TC-ASSIM_MSR-1989'+month+'-fv0021.nc'
-    with cd(directory):
-        nc = netcdf.netcdf_file(wrf_file_name, 'r')
-        data = nc.variables['total_ozone_column'][0][
-               :].copy()  # copy to variable as .netcdf_file gives direct view to memory
+if config.DL_COPERNICUS:
+    dl.dl_copernicus_data(years=config.YEARS, month=config.COP_MONTH, path=config.COP_PATH)
+    dl.extract_copernicus(zip_folder=config.COP_PATH + 'download.zip', extract_path=config.COP_PATH)
 
-    # data in netcdf is bigendian so swap byte order in dataframe constructor
-    o3_datav0 = pd.DataFrame(data[0:90, :].copy().byteswap().newbyteorder())
+# Data ingestion functions
+cop_data = ing.ingest_cop(years=config.YEARS, month=config.COP_MONTH)
+omi_data = ing.ingest_omi(config.NASA_PATH, dates=config.NASA_DATES)
 
-    # add col at end with [0,0,1,1,2,2,3...89,89] list for grouping pairs of latitudes
-    red_lat = pd.Series([int(np.floor(x / 2)) for x in range(90)])
-    o3_datav0['red_lat'] = pd.Series(red_lat)
+# Data Processing functions
+cop_proc = ps.process_cop(cop_data)
+omi_proc = ps.process_omi(omi_data)
 
-    # groupby pairing col and take means
-    o3_datav1 = o3_datav0.groupby('red_lat').mean()
-    assert o3_datav1.shape == (45, 720), "shape is : %r" % str(o3_datav1.shape)
+# Data plotting functions
 
-    # transpose to do same operation on rows (longitudes)
-    o3_datav2 = o3_datav1.transpose()
-    # create longitude pairing col
-    red_long = pd.Series([int(np.floor(x / 2)) for x in range(720)])
-    o3_datav2['red_long'] = red_long
+cop_fig, cop_ax, cop_cax = vis.plot_polar_contour(cop_proc[0], cmap='spring', levels=200)
+cop_fig.suptitle(config.YEARS[0]+'-'+config.COP_MONTH, x=0.515)
+# fig.savefig(config.COP_PLOT_PATH + year + '-' + config.COP_MONTH + '.png', dpi=150, bbox_inches=0, pad_inches=0)
 
-    # reduce resolution along columns (longitudes) and transpose again
-    o3_datav2 = o3_datav2.groupby('red_long').mean().transpose()
 
-    # add a duplicate of the first column for neat plotting
-    o3_data = pd.concat((o3_datav2, o3_datav2.iloc[:, 0]), axis=1)
-    assert o3_data.shape == (45,361), "shape is: %r" % str(o3_data.shape)
-
-    plot_polar_contour(o3_data,np.arange(-180,181),np.arange(0,45),cmap='spring',levels=200)
-    plt.show()
+omi_fig, omi_ax, omi_cax = vis.plot_polar_contour(omi_proc[0], cmap='spring', levels=500, default_min=0, default_max=250)
+omi_fig.suptitle(config.NASA_DATES[0], x=0.515)
+plt.show()
