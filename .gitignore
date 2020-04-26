@@ -76,7 +76,8 @@ target/
 .ipynb_checkpoints/
 
 # exclude data from source control by default
-/data/
+.nc
+.he5
 
 # Mac OS-specific storage files
 .DS_Store
@@ -87,7 +88,6 @@ target/
 
 # plots
 .png
-/reports/figures
 
 # Mypy cache
 .mypy_cache/
