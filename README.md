@@ -1,7 +1,11 @@
 ozone_visualisation
 ==============================
 
-Visualising ozone distributions over Antarctica using data from NASA/ESA satellite sources. Easiest to set up with Anaconda using the environment.yml file. Requires logins for NASA/Copernicus websites - set these up at the links below then move .netrc and .cdsapirc files to the /user folder. Example of how to run the code is containted in main.py
+Visualising ozone distributions over Antarctica using data from NASA/ESA satellite sources.
+
+Easiest to set up with Anaconda using the environment.yml file.
+Requires logins for NASA/Copernicus websites - set these up at the links below then move .netrc and .cdsapirc files to the /user folder.
+Example of how to run the code is containted in main.py
 
 Project Organization
 ------------
