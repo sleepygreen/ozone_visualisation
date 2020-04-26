@@ -29,10 +29,11 @@ omi_proc = ps.process_omi(omi_data)
 # Data plotting functions
 
 cop_fig, cop_ax, cop_cax = vis.plot_polar_contour(cop_proc[0], cmap='spring', levels=200)
-cop_fig.suptitle(config.YEARS[0]+'-'+config.COP_MONTH, x=0.515)
+cop_fig.suptitle(config.YEARS[0] + '-' + config.COP_MONTH, x=0.515)
 # fig.savefig(config.COP_PLOT_PATH + year + '-' + config.COP_MONTH + '.png', dpi=150, bbox_inches=0, pad_inches=0)
 
 
-omi_fig, omi_ax, omi_cax = vis.plot_polar_contour(omi_proc[0], cmap='spring', levels=500, default_min=0, default_max=250)
+omi_fig, omi_ax, omi_cax = vis.plot_polar_contour(omi_proc[0], cmap='spring', levels=500, default_min=0,
+                                                  default_max=250)
 omi_fig.suptitle(config.NASA_DATES[0], x=0.515)
 plt.show()
