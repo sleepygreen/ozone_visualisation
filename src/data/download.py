@@ -1,16 +1,7 @@
-import os
 import requests
 from bs4 import BeautifulSoup
-from contextlib import contextmanager
-import config
 import cdsapi
-
-# Set url and extenstion for OMI TO3d data retrieval
-he5_root = 'https://acdisc.gesdisc.eosdis.nasa.gov/data/Aura_OMI_Level3/OMTO3d.003/2019'
-he5_ext = 'he5'
-
-# Set max get request retries
-MAX_RETRIES = 20
+import zipfile
 
 
 # Function to retrieve file urls from root (e.g. 2019 url)
@@ -31,8 +22,12 @@ def list_web_directory_files(url, ext=''):
     return web_files
 
 
-def gen_filenames():
+def gen_filenames(he5_root, he5_ext):
     """
+
+    Args:
+        he5_root: str
+        he5_ext: str
 
     Returns: filenames, urls: list, list
 
@@ -52,10 +47,11 @@ def gen_filenames():
 
 
 # function to get data based on retrieved urls
-def save_url(url, path, filename):
+def save_url(url, path, filename, session):
     """
 
     Args:
+        session: requests.Session()
         url: str
         path: str
         filename: str
@@ -64,35 +60,45 @@ def save_url(url, path, filename):
 
     """
     result = session.get(url)
-    try:
-        result.raise_for_status()
-        f = open(path+filename, 'wb')
+    if result.status_code == 200:
+        f = open(path + filename, 'wb')
         f.write(result.content)
         f.close()
-        print('contents of URL written to ' + filename)
-    except:
+        print('contents of URL written to ' + path + filename)
+    else:
         print('requests.get() returned an error code ' + str(result.status_code))
 
 
-def dl_nasa_he5_ozone(path, urls, filenames):
+def dl_nasa_he5_ozone(path, urls, filenames, max_retries):
     """
-
+    Saves contents of url to path with filename, retrying only max_retries number of times
     Args:
+        max_retries: int
         path: str
         urls: list
         filenames: list
 
-    Returns: Contents of url saved to path
+    Returns:
 
     """
     session = requests.Session()
-    adapter = requests.adapters.HTTPAdapter(max_retries=MAX_RETRIES)
+    adapter = requests.adapters.HTTPAdapter(max_retries=max_retries)
     session.mount('https://', adapter)
     for url, filename in zip(urls, filenames):
-        save_url(url, path, filename)
+        save_url(url, path, filename, session)
 
 
-def dl_copernicus_data(years, path):
+def dl_copernicus_data(years, month, path):
+    """
+
+    Args:
+        years: list
+        month: str
+        path: str
+
+    Returns:
+
+    """
     c = cdsapi.Client()
     c.retrieve(
         'satellite-ozone',
@@ -102,8 +108,22 @@ def dl_copernicus_data(years, path):
             'vertical_aggregation': 'total_column',
             'sensor': 'combination_of_15_sensors_using_gap_filling_assimilation_methods',
             'year': years,
-            'month': '01',
+            'month': month,
             'version': '0021',
             'format': 'zip',
         },
         path + 'download.zip')
+
+
+def extract_copernicus(zip_folder, extract_path):
+    """
+    Extracts contents of zip_folder to extract_path
+    Args:
+        zip_folder: str
+        extract_path: str
+
+    Returns:
+
+    """
+    with zipfile.ZipFile(zip_folder, 'r') as zip_ref:
+        zip_ref.extractall(extract_path)
