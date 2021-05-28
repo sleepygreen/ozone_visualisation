@@ -16,7 +16,7 @@ def ingest_cop(years, month):
     cop_data = []
     for year in years:
         directory = 'data\\raw\\copernicus\\'
-        wrf_file_name = 'C3S_OZONE-L4-TC-ASSIM_MSR-' + year + month + '-fv0021.nc'
+        wrf_file_name = year + month + '-C3S-L4_OZONE-O3_PRODUCTS-MSR-ASSIM-ALG-MONTHLY-v0021.nc'
 
         nc = netcdf.netcdf_file(directory + wrf_file_name, 'r')
         data = nc.variables['total_ozone_column'][0][:].copy()  # copy as .netcdf_file gives direct view to memory
