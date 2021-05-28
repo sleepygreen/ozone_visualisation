@@ -101,16 +101,16 @@ def dl_copernicus_data(years, month, path):
     """
     c = cdsapi.Client()
     c.retrieve(
-        'satellite-ozone',
+        'satellite-ozone-v1',
         {
+            'format': 'zip',
             'processing_level': 'level_4',
-            'variable': 'ozone_mole_content',
+            'variable': 'atmosphere_mole_content_of_ozone',
             'vertical_aggregation': 'total_column',
-            'sensor': 'combination_of_15_sensors_using_gap_filling_assimilation_methods',
+            'sensor': 'msr',
             'year': years,
             'month': month,
-            'version': '0021',
-            'format': 'zip',
+            'version': 'v0021',
         },
         path + 'download.zip')
 
