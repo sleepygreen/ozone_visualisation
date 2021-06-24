@@ -25,7 +25,7 @@ def ingest_cop(years, month):
     return cop_data
 
 
-def ingest_omi(path, dates):
+def ingest_nasa(path, dates):
     """
 
     Args:

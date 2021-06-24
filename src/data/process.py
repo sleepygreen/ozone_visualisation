@@ -24,7 +24,7 @@ def process_cop(cop_data):
     return cop_proc
 
 
-def process_omi(omi_data):
+def process_nasa(omi_data):
     """
 
     Args:
