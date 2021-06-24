@@ -22,7 +22,7 @@ def list_web_directory_files(url, ext=''):
     return web_files
 
 
-def gen_filenames(he5_root, he5_ext):
+def gen_nasa_filenames(he5_root, he5_ext):
     """
 
     Args:
@@ -69,7 +69,7 @@ def save_url(url, path, filename, session):
         print('requests.get() returned an error code ' + str(result.status_code))
 
 
-def dl_nasa_he5_ozone(path, urls, filenames, max_retries):
+def dl_nasa_ozone(path, urls, filenames, max_retries):
     """
     Saves contents of url to path with filename, retrying only max_retries number of times
     Args:
@@ -88,7 +88,7 @@ def dl_nasa_he5_ozone(path, urls, filenames, max_retries):
         save_url(url, path, filename, session)
 
 
-def dl_copernicus_data(years, month, path):
+def dl_copernicus_ozone(years, month, path):
     """
 
     Args:
